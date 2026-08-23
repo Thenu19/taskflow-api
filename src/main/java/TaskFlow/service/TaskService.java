@@ -5,7 +5,7 @@ import TaskFlow.repository.TaskRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
+import TaskFlow.exception.TaskNotFoundException;
 
 @Service
 public class TaskService {
@@ -24,13 +24,14 @@ public class TaskService {
         return taskRepository.findAll();
     }
 
-    public Optional<Task> getTaskById(Long id) {
-        return taskRepository.findById(id);
+    public Task getTaskById(Long id) {
+        return taskRepository.findById(id)
+                .orElseThrow(() -> new TaskNotFoundException(id));
     }
 
     public Task updateTask(Long id, Task updatedTask) {
         Task existingTask = taskRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Task not found with id: " + id));
+                .orElseThrow(() -> new TaskNotFoundException(id));
 
         existingTask.setTitle(updatedTask.getTitle());
         existingTask.setDescription(updatedTask.getDescription());
@@ -43,7 +44,7 @@ public class TaskService {
 
     public void deleteTask(Long id) {
         if (!taskRepository.existsById(id)) {
-            throw new RuntimeException("Task not found with id: " + id);
+            throw new TaskNotFoundException(id);
         }
 
         taskRepository.deleteById(id);

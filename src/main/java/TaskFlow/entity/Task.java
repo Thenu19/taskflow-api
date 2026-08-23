@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "tasks")
@@ -13,17 +16,24 @@ public class Task {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Title is required")
+    @Size(max = 150, message = "Title must not exceed 150 characters")
     @Column(nullable = false)
     private String title;
 
+    @Size(max = 1000, message = "Description must not exceed 1000 characters")
     @Column(length = 1000)
     private String description;
 
+    @NotNull(message = "Status is required")
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String status;
+    private TaskStatus status;
 
+    @NotNull(message = "Priority is required")
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String priority;
+    private TaskPriority priority;
 
     private LocalDate dueDate;
 
@@ -70,19 +80,19 @@ public class Task {
         this.description = description;
     }
 
-    public String getStatus() {
+    public TaskStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(TaskStatus status) {
         this.status = status;
     }
 
-    public String getPriority() {
+    public TaskPriority getPriority() {
         return priority;
     }
 
-    public void setPriority(String priority) {
+    public void setPriority(TaskPriority priority) {
         this.priority = priority;
     }
 
