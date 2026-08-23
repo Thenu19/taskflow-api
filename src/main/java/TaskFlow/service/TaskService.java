@@ -1,11 +1,13 @@
 package TaskFlow.service;
 
+import TaskFlow.dto.TaskRequest;
+import TaskFlow.dto.TaskResponse;
 import TaskFlow.entity.Task;
+import TaskFlow.exception.TaskNotFoundException;
 import TaskFlow.repository.TaskRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import TaskFlow.exception.TaskNotFoundException;
 
 @Service
 public class TaskService {
@@ -16,30 +18,47 @@ public class TaskService {
         this.taskRepository = taskRepository;
     }
 
-    public Task createTask(Task task) {
-        return taskRepository.save(task);
+    public TaskResponse createTask(TaskRequest request) {
+        Task task = new Task();
+
+        task.setTitle(request.getTitle());
+        task.setDescription(request.getDescription());
+        task.setStatus(request.getStatus());
+        task.setPriority(request.getPriority());
+        task.setDueDate(request.getDueDate());
+
+        Task savedTask = taskRepository.save(task);
+
+        return mapToResponse(savedTask);
     }
 
-    public List<Task> getAllTasks() {
-        return taskRepository.findAll();
+    public List<TaskResponse> getAllTasks() {
+        return taskRepository.findAll()
+                .stream()
+                .map(this::mapToResponse)
+                .toList();
     }
 
-    public Task getTaskById(Long id) {
-        return taskRepository.findById(id)
+    public TaskResponse getTaskById(Long id) {
+        Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new TaskNotFoundException(id));
+
+        return mapToResponse(task);
     }
 
-    public Task updateTask(Long id, Task updatedTask) {
+    public TaskResponse updateTask(Long id, TaskRequest request) {
         Task existingTask = taskRepository.findById(id)
                 .orElseThrow(() -> new TaskNotFoundException(id));
 
-        existingTask.setTitle(updatedTask.getTitle());
-        existingTask.setDescription(updatedTask.getDescription());
-        existingTask.setStatus(updatedTask.getStatus());
-        existingTask.setPriority(updatedTask.getPriority());
-        existingTask.setDueDate(updatedTask.getDueDate());
+        existingTask.setTitle(request.getTitle());
+        existingTask.setDescription(request.getDescription());
+        existingTask.setStatus(request.getStatus());
+        existingTask.setPriority(request.getPriority());
+        existingTask.setDueDate(request.getDueDate());
 
-        return taskRepository.save(existingTask);
+        Task updatedTask = taskRepository.save(existingTask);
+
+        return mapToResponse(updatedTask);
     }
 
     public void deleteTask(Long id) {
@@ -48,5 +67,18 @@ public class TaskService {
         }
 
         taskRepository.deleteById(id);
+    }
+
+    private TaskResponse mapToResponse(Task task) {
+        return new TaskResponse(
+                task.getId(),
+                task.getTitle(),
+                task.getDescription(),
+                task.getStatus(),
+                task.getPriority(),
+                task.getDueDate(),
+                task.getCreatedAt(),
+                task.getUpdatedAt()
+        );
     }
 }

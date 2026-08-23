@@ -1,6 +1,7 @@
 package TaskFlow.controller;
 
-import TaskFlow.entity.Task;
+import TaskFlow.dto.TaskRequest;
+import TaskFlow.dto.TaskResponse;
 import TaskFlow.service.TaskService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -19,26 +20,26 @@ public class TaskController {
     }
 
     @PostMapping
-    public Task createTask(@Valid @RequestBody Task task) {
-        return taskService.createTask(task);
+    public TaskResponse createTask(@Valid @RequestBody TaskRequest request) {
+        return taskService.createTask(request);
     }
 
     @GetMapping
-    public List<Task> getAllTasks() {
+    public List<TaskResponse> getAllTasks() {
         return taskService.getAllTasks();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Task> getTaskById(@PathVariable Long id) {
+    public ResponseEntity<TaskResponse> getTaskById(@PathVariable Long id) {
         return ResponseEntity.ok(taskService.getTaskById(id));
     }
 
     @PutMapping("/{id}")
-    public Task updateTask(
+    public TaskResponse updateTask(
             @PathVariable Long id,
-            @Valid @RequestBody Task task) {
+            @Valid @RequestBody TaskRequest request) {
 
-        return taskService.updateTask(id, task);
+        return taskService.updateTask(id, request);
     }
 
     @DeleteMapping("/{id}")
