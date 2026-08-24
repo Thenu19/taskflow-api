@@ -6,6 +6,8 @@ import TaskFlow.service.TaskService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import TaskFlow.entity.TaskPriority;
+import TaskFlow.entity.TaskStatus;
 
 import java.util.List;
 
@@ -46,5 +48,26 @@ public class TaskController {
     public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
         taskService.deleteTask(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/filter/status")
+    public List<TaskResponse> getTasksByStatus(
+            @RequestParam TaskStatus status) {
+
+        return taskService.getTasksByStatus(status);
+    }
+
+    @GetMapping("/filter/priority")
+    public List<TaskResponse> getTasksByPriority(
+            @RequestParam TaskPriority priority) {
+
+        return taskService.getTasksByPriority(priority);
+    }
+
+    @GetMapping("/search")
+    public List<TaskResponse> searchTasks(
+            @RequestParam String query) {
+
+        return taskService.searchTasks(query);
     }
 }

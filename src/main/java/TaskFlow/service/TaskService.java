@@ -6,6 +6,8 @@ import TaskFlow.entity.Task;
 import TaskFlow.exception.TaskNotFoundException;
 import TaskFlow.repository.TaskRepository;
 import org.springframework.stereotype.Service;
+import TaskFlow.entity.TaskPriority;
+import TaskFlow.entity.TaskStatus;
 
 import java.util.List;
 
@@ -68,6 +70,29 @@ public class TaskService {
 
         taskRepository.deleteById(id);
     }
+
+    public List<TaskResponse> getTasksByStatus(TaskStatus status) {
+        return taskRepository.findByStatus(status)
+                .stream()
+                .map(this::mapToResponse)
+                .toList();
+    }
+
+    public List<TaskResponse> getTasksByPriority(TaskPriority priority) {
+        return taskRepository.findByPriority(priority)
+                .stream()
+                .map(this::mapToResponse)
+                .toList();
+    }
+
+    public List<TaskResponse> searchTasks(String search) {
+        return taskRepository.findByTitleContainingIgnoreCase(search)
+                .stream()
+                .map(this::mapToResponse)
+                .toList();
+    }
+
+
 
     private TaskResponse mapToResponse(Task task) {
         return new TaskResponse(
